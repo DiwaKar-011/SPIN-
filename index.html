@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cypherverse — Spider Hackathon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@300;400;500;600&family=Nunito:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-elements">
+        <!-- CSS drawn web pattern in style.css -->
+        <div class="web-overlay"></div>
+        <div class="red-glow"></div>
+
+        <!-- Hanging Spider -->
+        <div class="spider-container">
+            <div class="thread"></div>
+            <div class="spider">
+                <!-- Simple SVG Spider -->
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="#dc2626" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2C10.9 2 10 2.9 10 4V6.5C10 7.3 10.7 8 11.5 8H12.5C13.3 8 14 7.3 14 6.5V4C14 2.9 13.1 2 12 2ZM8.5 7.5L5 4L3.6 5.4L6.1 8H5C3.3 8 2 9.3 2 11V14H4V11.5C4 10.7 4.7 10 5.5 10H8.1L6.6 12.5C6.1 13.3 6.4 14.3 7.2 14.8L8.7 15.7L10 13V18C10 19.1 10.9 20 12 20C13.1 20 14 19.1 14 18V13L15.3 15.7L16.8 14.8C17.6 14.3 17.9 13.3 17.4 12.5L15.9 10H18.5C19.3 10 20 10.7 20 11.5V14H22V11C22 9.3 20.7 8 19 8H17.9L20.4 5.4L19 4L15.5 7.5H8.5Z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">Cypherverse</h1>
+            <p class="subtitle">Every Code Holds New Possibilities.</p>
+        </header>
+
+        <main>
+            <section class="config-panel glass-panel" id="config-panel">
+                <div class="form-group">
+                    <label for="team-name">Team Designation</label>
+                    <input type="text" id="team-name" placeholder="Enter your team name..." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="team-number">Team Number</label>
+                    <input type="number" id="team-number" placeholder="Enter your team number..." autocomplete="off"
+                        min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Operation Domain</label>
+                    <div class="select-wrapper">
+                        <select id="category">
+                            <option value="" disabled selected>Select a domain...</option>
+                            <option value="aiml">Artificial Intelligence & Machine Learning</option>
+                            <option value="agentic">Agentic AI & Autonomous Systems</option>
+                            <option value="cybersecurity">Cybersecurity & Forensics</option>
+                            <option value="web3">Web3 & Decentralized Systems</option>
+                            <option value="sustainability">Green Tech & Sustainability</option>
+                        </select>
+                        <div class="select-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="generate-btn" class="primary-btn">
+                    <span>Generate Directives</span>
+                    <div class="btn-glow"></div>
+                </button>
+                <div id="error-message" class="error-message"></div>
+            </section>
+
+            <section class="results-area hidden" id="results-area">
+                <div class="results-header">
+                    <h2>Your Mission, <span id="display-team-name" class="highlight">Team</span></h2>
+                    <p>Your assigned problem statement has been spun from the web.</p>
+                </div>
+
+                <div class="cards-grid" id="cards-container">
+                    <!-- Cards will be injected here via JS -->
+                </div>
+
+                <div class="action-footer hidden" id="action-footer">
+                    <button class="success-btn" id="confirm-btn">Accept Mission</button>
+                    <button class="secondary-btn" id="reroll-btn">Re-Spin Web</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="success-modal hidden" id="success-modal">
+        <div class="modal-content glass-panel">
+            <div class="success-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3>Confirm Assignment</h3>
+            <div class="details-summary"
+                style="text-align: left; margin-bottom: 1.5rem; background: rgba(0,0,0,0.5); padding: 1rem; border-radius: var(--radius-md); border: 1px solid rgba(220, 38, 38, 0.3);">
+                <p><strong>Team Name:</strong> <span id="locked-team" class="highlight"></span></p>
+                <p><strong>Team Number:</strong> <span id="locked-team-number" class="highlight"></span></p>
+                <p><strong>Domain:</strong> <span id="locked-domain" class="highlight"></span></p>
+            </div>
+            <p style="text-align: left; margin-bottom: 0.5rem; color: #ef4444; font-weight: bold;">Selected Target:</p>
+            <div class="locked-problem" id="locked-problem"></div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="secondary-btn mt-4" id="cancel-modal-btn">Cancel</button>
+                <button class="primary-btn mt-4" id="finalize-btn">Lock & Finalize</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
