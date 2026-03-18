@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const actionFooter = document.getElementById('action-footer');
     
     const confirmBtn = document.getElementById('confirm-btn');
-    const rerollBtn = document.getElementById('reroll-btn');
+
     
     const successModal = document.getElementById('success-modal');
     const lockedTeam = document.getElementById('locked-team');
@@ -272,16 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') generateCards();
     });
 
-    rerollBtn.addEventListener('click', () => {
-        // Pick a fresh random problem from same category
-        const categoryProblems = problemDatabase[state.category];
-        const randomIndex = Math.floor(Math.random() * categoryProblems.length);
-        const newCard = categoryProblems[randomIndex];
-        state.currentCards = [newCard];
-        state.selectedCardId = newCard.id;
-        confirmBtn.disabled = false;
-        renderCards();
-    });
+
 
     confirmBtn.addEventListener('click', confirmSelection);
 });
