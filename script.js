@@ -241,17 +241,14 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                // IMPORTANT: 'application/json' Content-Type triggers a CORS preflight
-                // which is blocked in no-cors mode. Using 'text/plain' is a "simple"
-                // header that bypasses this — Google Apps Script reads it fine via
-                // e.postData.contents as a JSON string.
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: {
-                        'Content-Type': 'text/plain' // ✅ Simple header — works with no-cors
-                    },
-                    body: JSON.stringify(payload)
+                // Switching to a GET request makes this 100% immune to all browser CORS 
+                // rules, allowing it to work perfectly even from local file:/// paths!
+                const url = new URL(GOOGLE_SCRIPT_URL);
+                url.searchParams.append('data', JSON.stringify(payload));
+                
+                await fetch(url.toString(), {
+                    method: 'GET',
+                    mode: 'no-cors'
                 });
 
                 // With no-cors, a completed fetch (no exception thrown) means the

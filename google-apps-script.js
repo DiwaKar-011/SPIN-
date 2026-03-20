@@ -16,31 +16,12 @@
 
 const SHEET_NAME = 'Registrations'; // Name of the tab in your Google Sheet
 
+// We keep doPost just in case, but switch main logic to a reusable function
 function doPost(e) {
   try {
-    // Parse the incoming JSON body
     const data = JSON.parse(e.postData.contents);
-
-    const sheet = getOrCreateSheet();
-
-    // Append the row with all submitted data
-    sheet.appendRow([
-      new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // Timestamp (IST)
-      data.teamName     || '',
-      data.teamNumber   || '',
-      data.domain       || '',
-      data.problemId    || '',
-      data.problemTitle || '',
-      data.problemDesc  || ''
-    ]);
-
-    // Return success response
-    return ContentService
-      .createTextOutput(JSON.stringify({ success: true, message: 'Data saved successfully' }))
-      .setMimeType(ContentService.MimeType.JSON);
-
+    return processData(data);
   } catch (error) {
-    // Return error response
     return ContentService
       .createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
@@ -48,12 +29,43 @@ function doPost(e) {
 }
 
 /**
- * doGet is required so the script can respond to GET requests
- * (used for testing the deployment)
+ * doGet is now fully equipped to save data, which bypasses browser CORS entirely!
  */
 function doGet(e) {
+  if (e.parameter.data) {
+    try {
+      // Decode the URL data parameter
+      const data = JSON.parse(e.parameter.data);
+      return processData(data);
+    } catch(error) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // If someone just visits the URL
   return ContentService
     .createTextOutput(JSON.stringify({ status: 'Cypherverse Sheets API is live!' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Core saving logic
+function processData(data) {
+  const sheet = getOrCreateSheet();
+
+  sheet.appendRow([
+    new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // Timestamp (IST)
+    data.teamName     || '',
+    data.teamNumber   || '',
+    data.domain       || '',
+    data.problemId    || '',
+    data.problemTitle || '',
+    data.problemDesc  || ''
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ success: true, message: 'Data saved successfully' }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -65,32 +77,12 @@ function getOrCreateSheet() {
   let sheet = ss.getSheetByName(SHEET_NAME);
 
   if (!sheet) {
-    // Create a new sheet tab if it doesn't exist
     sheet = ss.insertSheet(SHEET_NAME);
-
-    // Add header row with formatting
-    const headers = [
-      'Timestamp',
-      'Team Name',
-      'Team Number',
-      'Domain',
-      'Problem ID',
-      'Problem Title',
-      'Problem Description'
-    ];
+    const headers = ['Timestamp', 'Team Name', 'Team Number', 'Domain', 'Problem ID', 'Problem Title', 'Problem Description'];
     sheet.appendRow(headers);
-
-    // Style the header row
     const headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setBackground('#1a1a2e');
-    headerRange.setFontColor('#dc2626');
-    headerRange.setFontWeight('bold');
-    headerRange.setFontSize(11);
-
-    // Freeze header row
+    headerRange.setBackground('#1a1a2e').setFontColor('#dc2626').setFontWeight('bold').setFontSize(11);
     sheet.setFrozenRows(1);
-
-    // Auto-resize columns for readability
     sheet.autoResizeColumns(1, headers.length);
   }
 
