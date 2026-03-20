@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
 
                 // Send data to Google Apps Script Web App
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxvroLGghY4pEnc919IW5yuWjwhnhOwlhPTdrHb3p3gFpIa0Fu0Qir_QD87XFBGGB0/exec', {
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxh0glxwaMSbzyGWiplHBp5kEOLuSro6RmcMpKdC5luWGSt9sg4-BUdckhLoUg6q9mc/exec', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
