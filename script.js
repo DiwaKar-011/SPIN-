@@ -241,14 +241,15 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                // Google Apps Script requires 'no-cors' mode from browser clients.
-                // The response will be "opaque" (we can't read it), but the data
-                // WILL be written to the sheet if the script URL is correct.
+                // IMPORTANT: 'application/json' Content-Type triggers a CORS preflight
+                // which is blocked in no-cors mode. Using 'text/plain' is a "simple"
+                // header that bypasses this — Google Apps Script reads it fine via
+                // e.postData.contents as a JSON string.
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Required for Google Apps Script cross-origin calls
+                    mode: 'no-cors',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'text/plain' // ✅ Simple header — works with no-cors
                     },
                     body: JSON.stringify(payload)
                 });
