@@ -37,7 +37,7 @@ function doGet(e) {
       // Decode the URL data parameter
       const data = JSON.parse(e.parameter.data);
       return processData(data);
-    } catch(error) {
+    } catch (error) {
       return ContentService
         .createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
         .setMimeType(ContentService.MimeType.JSON);
@@ -56,12 +56,12 @@ function processData(data) {
 
   sheet.appendRow([
     new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }), // Timestamp (IST)
-    data.teamName     || '',
-    data.teamNumber   || '',
-    data.domain       || '',
-    data.problemId    || '',
+    data.teamName || '',
+    data.teamNumber || '',
+    data.domain || '',
+    data.problemId || '',
     data.problemTitle || '',
-    data.problemDesc  || ''
+    data.problemDesc || ''
   ]);
 
   return ContentService
