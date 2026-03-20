@@ -1,3 +1,11 @@
+// ============================================================
+// 🔗 GOOGLE SHEETS INTEGRATION
+// Replace this URL with your deployed Google Apps Script URL
+// Steps: Extensions > Apps Script > Deploy > New Deployment
+//        Type: Web App | Execute as: Me | Access: Anyone
+// ============================================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzaL3Bk01jDsfBw2Wa1F_S3edVKQjV0VeXR0_goCKTBuCQ3k1TFnR0tOMcc0UVFLFE/exec';
+
 document.addEventListener('DOMContentLoaded', () => {
     // DOM Elements
     const teamNameInput = document.getElementById('team-name');
@@ -5,16 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const categorySelect = document.getElementById('category');
     const generateBtn = document.getElementById('generate-btn');
     const errorMessage = document.getElementById('error-message');
-    
+
     const configPanel = document.getElementById('config-panel');
     const resultsArea = document.getElementById('results-area');
     const displayTeamName = document.getElementById('display-team-name');
     const cardsContainer = document.getElementById('cards-container');
     const actionFooter = document.getElementById('action-footer');
-    
+
     const confirmBtn = document.getElementById('confirm-btn');
 
-    
+
     const successModal = document.getElementById('success-modal');
     const lockedTeam = document.getElementById('locked-team');
     const lockedTeamNumber = document.getElementById('locked-team-number');
@@ -191,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const selectedCard = state.currentCards.find(c => c.id === state.selectedCardId);
         const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
-        
+
         // Update Modal
         lockedTeam.textContent = state.teamName;
         lockedTeamNumber.textContent = state.teamNumber;
@@ -219,43 +227,45 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectedCard = state.currentCards.find(c => c.id === state.selectedCardId);
             const categoryName = categorySelect.options[categorySelect.selectedIndex].text;
 
-            // Change button state
+            // Change button state to loading
             finalizeBtn.disabled = true;
-            finalizeBtn.textContent = 'Locking...';
+            finalizeBtn.textContent = '⏳ Locking...';
+
+            const payload = {
+                teamName: state.teamName,
+                teamNumber: state.teamNumber,
+                domain: categoryName,
+                problemId: selectedCard.id,
+                problemTitle: selectedCard.title,
+                problemDesc: selectedCard.desc
+            };
 
             try {
-
-                // Send data to Google Apps Script Web App
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxh0glxwaMSbzyGWiplHBp5kEOLuSro6RmcMpKdC5luWGSt9sg4-BUdckhLoUg6q9mc/exec', {
+                // Google Apps Script requires 'no-cors' mode from browser clients.
+                // The response will be "opaque" (we can't read it), but the data
+                // WILL be written to the sheet if the script URL is correct.
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors', // Required for Google Apps Script cross-origin calls
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({
-                        teamName: state.teamName,
-                        teamNumber: state.teamNumber,
-                        domain: categoryName,
-                        problemId: selectedCard.id,
-                        problemTitle: selectedCard.title,
-                        problemDesc: selectedCard.desc
-                    })
+                    body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
-                    finalizeBtn.textContent = 'Success!';
-                    finalizeBtn.style.background = 'var(--success)';
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                } else {
-                    const data = await response.json();
-                    alert('Error saving data: ' + (data.error || 'Unknown error'));
-                    finalizeBtn.disabled = false;
-                    finalizeBtn.textContent = 'Lock & Finalize';
-                }
+                // With no-cors, a completed fetch (no exception thrown) means the
+                // request was sent. Treat as success.
+                finalizeBtn.textContent = '✅ Mission Locked!';
+                finalizeBtn.style.background = 'linear-gradient(135deg, #16a34a, #15803d)';
+                finalizeBtn.style.boxShadow = '0 0 20px rgba(22, 163, 74, 0.5)';
+
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+
             } catch (error) {
-                console.error('Error:', error);
-                alert('Network error while saving data.');
+                console.error('Error sending to Google Sheets:', error);
+                alert('⚠️ Network error while saving data. Please check your connection and try again.');
                 finalizeBtn.disabled = false;
                 finalizeBtn.textContent = 'Lock & Finalize';
             }
@@ -264,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     generateBtn.addEventListener('click', generateCards);
-    
+
     // Allow enter key submission directly from inputs
     teamNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') generateCards();
