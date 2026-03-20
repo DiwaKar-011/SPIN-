@@ -224,7 +224,9 @@ document.addEventListener('DOMContentLoaded', () => {
             finalizeBtn.textContent = 'Locking...';
 
             try {
-                const response = await fetch('/api/save-selection', {
+
+                // Send data to Google Apps Script Web App
+                const response = await fetch('https://script.google.com/macros/s/AKfycbxvroLGghY4pEnc919IW5yuWjwhnhOwlhPTdrHb3p3gFpIa0Fu0Qir_QD87XFBGGB0/exec', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
